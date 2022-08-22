@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <title>
+        <%- country %> - Country Data
+    </title>
+    <%- include('modules') %>
+</head>
+
+<body>
+    <%- include('header') %>
+        <main>
+            <img alt="" class="flag materialboxed">
+            <h6 class="country-name"></h6>
+            <div class="section-name">Full Name</div>
+            <label class="info full-name"></label>
+
+            <div class="section-name">Languages</div>
+            <label class="info languages"></label>
+
+            <div class="section-name">Alternate Spellings</div>
+            <label class="info altSpellings"></label>
+
+            <div class="section-name">Currency</div>
+            <label class="info currency"></label>
+
+            <div class="section-name">Capital(s)</div>
+            <label class="info capitals"></label>
+
+            <div class="section-name">Time Zone(s)</div>
+            <label class="info timezones"></label>
+
+            <div class="section-name">Population</div>
+            <label class="info population"></label>
+
+            <div class="section-name">Coat Of Arms</div>
+            <img src alt="" class="coat-of-arms materialboxed" loading="lazy" onerror="this.src='/loader.gif';" onload="this.style.border='0px';">
+
+            <div class="section-name">Top Level Domain</div>
+            <label class="info tlds"></label>
+
+            <div class="section-name">Region</div>
+            <label class="info region"></label>
+
+            <div class="section-name">Sub Region</div>
+            <label class="info sub-region"></label>
+
+            <div class="section-name">Google Maps</div>
+            <a target="_blank" class="maps-link">
+                <button class="btn waves-effect open-in-google-maps">Open In Google Maps</button>
+            </a>
+        </main>
+</body>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow&family=Montserrat&display=swap');
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .flag {
+        width: 90%;
+        max-width: 300px;
+        border: 0.1px solid;
+        margin: 0 !important;
+        margin-top: 10px !important;
+    }
+    
+    .country-name {
+        width: 100%;
+        text-align: center;
+        font-weight: bolder;
+        font-size: 20px;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .open-in-google-maps {
+        display: block;
+        margin: auto;
+    }
+    
+    .info {
+        color: rgb(108, 108, 108);
+        width: 100%;
+        font-size: 20px;
+        text-align: center;
+        word-wrap: break-word;
+        font-family: 'Barlow', sans-serif;
+    }
+    
+    .section-name {
+        width: 100%;
+        margin: 0;
+        font-weight: bold;
+        text-align: center;
+        font-size: 17px;
+        margin-top: 25px;
+    }
+    
+    .coat-of-arms {
+        width: 90%;
+        max-width: 300px;
+        margin: 0;
+        background-color: rgb(242, 242, 242);
+    }
+    
+    * {
+        flex-shrink: 0;
+    }
+</style>
+
+<script>
+    fetch('https://restcountries.com/v3.1/name/<%- country %>?fullText=true').then(res => res.json()).then(data => {
+        var countryData = data[0];
+        console.log(data[0]);
+        $('.flag').attr('src', countryData['flags']['svg']);
+        $('.country-name').text(countryData['name']['common']);
+        $('.full-name').text(countryData['name']['official']);
+        $('.region').text(countryData['region']);
+        $('.sub-region').text(countryData['subregion']);
+        $('.population').text(countryData['population'] + ' People');
+        $('.maps-link').attr('href', countryData['maps']['googleMaps']);
+        for (lang in countryData['languages']) {
+            document.querySelector('.languages').innerHTML += countryData['languages'][lang] + ',&nbsp;';
+        }
+        document.querySelector('.languages').innerHTML = document.querySelector('.languages').innerHTML.slice(0, -7);
+
+        for (timezone in countryData['timezones']) {
+            document.querySelector('.timezones').innerHTML += countryData['timezones'][timezone] + ',&nbsp;';
+        }
+        document.querySelector('.timezones').innerHTML = document.querySelector('.timezones').innerHTML.slice(0, -7);
+
+        for (capital in countryData['capital']) {
+            document.querySelector('.capitals').innerHTML += countryData['capital'][capital] + ',&nbsp;';
+        }
+        document.querySelector('.capitals').innerHTML = document.querySelector('.capitals').innerHTML.slice(0, -7);
+
+        for (currency in countryData['currencies']) {
+            document.querySelector('.currency').innerHTML += countryData['currencies'][currency]['name'] + ',&nbsp;';
+        }
+        document.querySelector('.currency').innerHTML = document.querySelector('.currency').innerHTML.slice(0, -7);
+
+        for (tld in countryData['tld']) {
+            document.querySelector('.tlds').innerHTML += countryData['tld'][tld] + ',&nbsp;';
+        }
+        document.querySelector('.tlds').innerHTML = document.querySelector('.tlds').innerHTML.slice(0, -7);
+
+        for (alt in countryData['altSpellings']) {
+            document.querySelector('.altSpellings').innerHTML += countryData['altSpellings'][alt] + ',&nbsp;';
+        }
+        document.querySelector('.altSpellings').innerHTML = document.querySelector('.altSpellings').innerHTML.slice(0, -7);
+
+        if (countryData['coatOfArms']['svg'] != undefined) {
+            $('.coat-of-arms').attr('src', countryData['coatOfArms']['svg']);
+        } else {
+            $('.coat-of-arms').attr('src', "/image-not-found.png");
+        }
+
+    });
+</script>
+
+</html>

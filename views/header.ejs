@@ -1,0 +1,112 @@
+<nav style="display:flex;align-items:center;">
+    <a data-target="slide-out" class="sidenav-trigger show-on-large"><i class="bi bi-list"></i></a>
+    <p style="font-size:20px;position:fixed;left:50%;transform:translate(-50%, 0%);">Country Data</p>
+</nav>
+
+<ul id="slide-out" class="sidenav">
+    <div class="user-view">
+        <div class="background">
+            <img src="https://static.vecteezy.com/system/resources/thumbnails/004/409/781/small/technology-blue-background-free-vector.jpg">
+        </div>
+        <img class="circle materialboxed" src="https://img.icons8.com/fluency/100240000000/user-male-circle.png">
+        <span class="white-text name">Guest User</span>
+        <span class="white-text email">guestuser@example.com</span>
+    </div>
+    <li><a data-href="/"><i class="bi bi-house-fill"></i>Home</a></li>
+    <li><a data-href="/credits"><i class="bi bi-plus-square-fill"></i>Credits</a></li>
+    <li><a href="https://github.com/sancho1952007/countries" target="_blank"><i class="bi bi-github"></i>Source Code</a></li>
+</ul>
+
+
+<div class="loader">
+    <div class="preloader-wrapper big active main-loader">
+        <div class="spinner-layer spinner-blue">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+
+        <div class="spinner-layer spinner-red">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+
+        <div class="spinner-layer spinner-yellow">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+
+        <div class="spinner-layer spinner-green">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', function() {
+        $('main').hide();
+        if (sessionStorage.getItem('animate') === 'true') {
+            $('main').show('slide', {
+                direction: 'left'
+            }, 500);
+            sessionStorage.removeItem('animate');
+        } else {
+            $('main').show();
+        }
+
+        $('.sidenav').sidenav({
+            draggable: true,
+            preventScrolling: true,
+            closeOnClick: true
+        });
+
+        $('.materialboxed').materialbox();
+
+        $('a[data-href]').click((elem) => {
+            var url = new URL(window.location.href);
+            if ((url.origin + url.pathname) == (url.origin + elem.currentTarget.getAttribute('data-href'))) {
+                $('.sidenav').sidenav('close');
+            } else {
+                $('.sidenav').sidenav('close');
+                $('main').hide('slide', {
+                    direction: 'right'
+                }, 500);
+                setTimeout(function() {
+                    $('.loader').fadeIn('slow');
+                    sessionStorage.setItem('animate', 'true');
+                    window.location.href = elem.currentTarget.getAttribute('data-href');
+                }, 500);
+            }
+        });
+
+        $('.loader').fadeOut('slow');
+    });
+</script>

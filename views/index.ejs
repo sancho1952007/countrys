@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <title>Country Data</title>
+    <%- include('modules') %>
+</head>
+
+<body>
+    <%- include('header') %>
+        <main>
+            <div style="display:flex;align-items:center;justify-content:center;margin-top:10px;">
+                <input id="autocomplete-input" type="text" placeholder="Enter Country's Name" class="browser-default search input autocomplete" style="margin-left: 3px;margin-bottom:10px;">
+                <button class="btn waves-effect z-depth-0 search-btn"><i class="bi bi-search"></i></button>
+            </div>
+
+            <div class="countries"></div>
+        </main>
+</body>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow&family=Montserrat&display=swap');
+    nav,
+    .sidenav {
+        user-select: none;
+    }
+    
+    .input {
+        width: calc(95% - 10px);
+        height: 40px;
+        padding: 10px;
+        border: 0;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        background-color: lightgrey;
+        font-family: 'Barlow', sans-serif;
+        font-size: 17px;
+        transition: all .25s linear;
+    }
+    
+    .input::placeholder {
+        color: darkgrey;
+    }
+    
+    .input:focus {
+        background-color: rgb(201, 201, 201);
+    }
+    
+    .search-btn {
+        width: fit-content;
+        margin-right: 3px;
+        height: 40px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        margin-bottom: 10px;
+    }
+    
+    .countries {
+        width: 100%;
+        height: calc(100% - 60px);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        overflow-y: auto;
+    }
+    
+    .country:last-child {
+        margin-bottom: 20px;
+    }
+    
+    .country {
+        width: calc(50% - 10px);
+        max-width: 200px;
+        height: fit-content;
+        border: 1px solid grey;
+        padding: 5px;
+        border-radius: 5px;
+        flex-shrink: 0;
+    }
+    
+    .country-flag {
+        width: 100%;
+        height: 120px;
+    }
+    
+    .country-name {
+        color: black !important;
+        font-family: 'Montserrat', sans-serif;
+        text-align: center;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        var search_input = sessionStorage.getItem('search-input');
+
+        if (search_input) {
+            $('.search').val(search_input);
+        }
+
+        $('.materialboxed').materialbox();
+        fetch('/data.json').then(res => res.json()).then(data => {
+            for (country = 0; country < data.length; country++) {
+                var name = data[country]['name']['common'];
+                var flag = data[country]['flags']['svg'];
+                var country_div = document.createElement('div');
+                country_div.className = "country waves-effect";
+                country_div.setAttribute('country', data[country]['name']['common'])
+                country_div.onclick = (elem) => {
+                    sessionStorage.removeItem('search-input');
+                    $('.sidenav').sidenav('close');
+                    $('main').hide('slide', {
+                        direction: 'right'
+                    }, 500);
+                    setTimeout(function() {
+                        $('.loader').fadeIn('slow');
+                        sessionStorage.setItem('animate', 'true');
+                        window.location.href = '/country/' + elem.target.getAttribute('country');
+                    }, 500);
+                }
+
+                var country_flag = document.createElement('img');
+                country_flag.src = flag;
+                country_flag.alt = "";
+                country_flag.className = "country-flag";
+                country_flag.loading = "lazy";
+
+                var country_name = document.createElement('h6');
+                country_name.innerText = name;
+                country_name.className = "country-name";
+
+                country_div.appendChild(country_flag);
+                country_div.appendChild(country_name);
+                document.querySelector('.countries').appendChild(country_div);
+            }
+        });
+
+        $('.search').keyup((key) => {
+            sessionStorage.setItem('search-input', $('.search').val());
+            if (key.keyCode == 13) {
+                if ($('.search').val().trim() != '') {
+                    window.location.href = '/search?country=' + $('.search').val();
+                }
+            }
+        });
+
+        $('.search-btn').click(() => {
+            if ($('.search').val().trim() != '') {
+                sessionStorage.setItem('search-input', $('.search').val());
+                window.location.href = '/search?country=' + $('.search').val();
+            }
+        });
+
+        $(document).keyup((key) => {
+            if (key.originalEvent.key == '/') {
+                $('.search').focus();
+                $('.search')[0].selectionStart = $('.search')[0].selectionEnd = $('.search')[0].value.length;
+            }
+        });
+    });
+</script>
+
+</html>
